@@ -4,12 +4,28 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { cx } from "@/lib/format";
-import { ArticleIcon, CoachIcon, HomeIcon, PlansIcon, ProfileIcon } from "@/components/ui/Icons";
+import { useAppStore } from "@/lib/store/AppStore";
+import {
+  ArticleIcon,
+  ChatIcon,
+  CoachIcon,
+  HomeIcon,
+  PlansIcon,
+  ProfileIcon,
+} from "@/components/ui/Icons";
 
-const TABS = [
+const CLIENT_TABS = [
   { href: "/", label: "امروز", Icon: HomeIcon },
   { href: "/plans", label: "برنامه‌های من", Icon: PlansIcon },
   { href: "/specialists", label: "مشاورین", Icon: CoachIcon },
+  { href: "/articles", label: "مقالات", Icon: ArticleIcon },
+  { href: "/profile", label: "پروفایل", Icon: ProfileIcon },
+] as const;
+
+/** Doctor View swaps the first three tabs for the specialist's own workflow. */
+const SPECIALIST_TABS = [
+  { href: "/doctor", label: "بیماران", Icon: CoachIcon },
+  { href: "/chat/th_1", label: "گفتگوها", Icon: ChatIcon },
   { href: "/articles", label: "مقالات", Icon: ArticleIcon },
   { href: "/profile", label: "پروفایل", Icon: ProfileIcon },
 ] as const;
@@ -22,6 +38,8 @@ function isActive(pathname: string, href: string) {
 /** Five fixed tabs, safe-area aware, always on top of the scroll pane. */
 export function BottomNav() {
   const pathname = usePathname() || "/";
+  const { role } = useAppStore();
+  const tabs = role === "specialist" ? SPECIALIST_TABS : CLIENT_TABS;
 
   return (
     <nav
@@ -29,7 +47,7 @@ export function BottomNav() {
       aria-label="ناوبری اصلی"
     >
       <ul className="mx-auto flex max-w-[520px] items-stretch">
-        {TABS.map(({ href, label, Icon }) => {
+        {tabs.map(({ href, label, Icon }) => {
           const active = isActive(pathname, href);
           return (
             <li key={href} className="flex-1">

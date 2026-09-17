@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { cx } from "@/lib/format";
 import { CloseIcon } from "./Icons";
 
@@ -28,6 +29,15 @@ export function Sheet({
   maxHeight = "85vh",
   footer,
 }: SheetProps) {
+  // Sheets render through a portal on <body>.
+  //
+  // `position: fixed` resolves against the nearest ancestor with a transform,
+  // filter, backdrop-filter or containment — and the app header has
+  // `backdrop-blur`. A sheet opened from the header would otherwise be
+  // clipped to the header's box instead of covering the viewport.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   useEffect(() => {
     if (!open) return;
     const previous = document.body.style.overflow;
@@ -40,7 +50,9 @@ export function Sheet({
     };
   }, [open, onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true">
@@ -110,6 +122,7 @@ export function Sheet({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

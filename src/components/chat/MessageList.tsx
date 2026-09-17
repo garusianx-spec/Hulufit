@@ -21,6 +21,7 @@ export function MessageList({
   loadingOlder,
   onLoadOlder,
   onRetry,
+  perspective = "client",
 }: {
   messages: ChatMessage[];
   typing: boolean;
@@ -29,6 +30,7 @@ export function MessageList({
   loadingOlder: boolean;
   onLoadOlder: () => void;
   onRetry: (id: string) => void;
+  perspective?: "client" | "specialist";
 }) {
   const paneRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -115,7 +117,7 @@ export function MessageList({
                   </span>
                 </div>
               )}
-              <MessageBubble message={message} onRetry={onRetry} />
+              <MessageBubble message={message} onRetry={onRetry} perspective={perspective} />
             </div>
           );
         })}

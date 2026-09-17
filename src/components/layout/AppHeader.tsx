@@ -1,10 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
-import { cx } from "@/lib/format";
+import { useState, type ReactNode } from "react";
+import { cx, faNumber } from "@/lib/format";
 import { BrandLockup } from "./Logo";
+import { NotificationInbox } from "@/components/notifications/NotificationInbox";
+import { RoleSwitcher } from "./RoleSwitcher";
+import { useNotificationCenter } from "@/lib/notifications/NotificationProvider";
 import { BellIcon, ChevronRight } from "@/components/ui/Icons";
 
 interface AppHeaderProps {
@@ -14,8 +16,11 @@ interface AppHeaderProps {
   subtitle?: string;
   backHref?: string;
   actions?: ReactNode;
-  notificationsCount?: number;
   bordered?: boolean;
+  /** Hidden on screens that own the full viewport, like the chat transcript. */
+  showBell?: boolean;
+  /** The brand header carries the role switch; inner pages usually don't. */
+  showRoleSwitch?: boolean;
   children?: ReactNode;
 }
 
@@ -25,11 +30,14 @@ export function AppHeader({
   subtitle,
   backHref,
   actions,
-  notificationsCount = 0,
   bordered = true,
+  showBell = true,
+  showRoleSwitch = variant === "brand",
   children,
 }: AppHeaderProps) {
   const router = useRouter();
+  const { unread } = useNotificationCenter();
+  const [inboxOpen, setInboxOpen] = useState(false);
 
   return (
     <header
@@ -61,24 +69,28 @@ export function AppHeader({
         )}
 
         <div className="flex flex-1 items-center justify-end gap-1">
+          {showRoleSwitch && <RoleSwitcher compact />}
           {actions}
-          {variant === "brand" && (
-            <Link
-              href="/profile"
-              aria-label="اعلان‌ها"
+          {showBell && (
+            <button
+              type="button"
+              onClick={() => setInboxOpen(true)}
+              aria-label={unread > 0 ? `اعلان‌ها، ${unread} خوانده‌نشده` : "اعلان‌ها"}
               className="tap-target relative grid place-items-center rounded-pill p-2 text-ink transition-colors active:bg-canvas"
             >
               <BellIcon width={21} height={21} />
-              {notificationsCount > 0 && (
+              {unread > 0 && (
                 <span className="absolute left-1.5 top-1.5 grid h-4 min-w-4 place-items-center rounded-pill bg-danger-500 px-1 text-[0.55rem] font-bold text-white">
-                  {notificationsCount}
+                  {faNumber(Math.min(unread, 99))}
                 </span>
               )}
-            </Link>
+            </button>
           )}
         </div>
       </div>
       {children}
+
+      <NotificationInbox open={inboxOpen} onClose={() => setInboxOpen(false)} />
     </header>
   );
 }

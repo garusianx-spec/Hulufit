@@ -301,3 +301,191 @@ export interface Order {
   status: "paid" | "refunded" | "pending";
   refId: string;
 }
+
+/* ------------------------- Onboarding assessment ------------------------- */
+
+export type ActivityLevel = "sedentary" | "light" | "moderate" | "very";
+
+export type HealthGoal = "loss" | "hypertrophy" | "maintenance" | "clinical";
+
+export type MedicalConditionKey =
+  | "diabetes1"
+  | "diabetes2"
+  | "hypertension"
+  | "hypothyroid"
+  | "hyperthyroid"
+  | "fattyLiver"
+  | "pcos"
+  | "ibs"
+  | "kidney"
+  | "cardiac"
+  | "pregnancy"
+  | "none";
+
+export type AllergyKey =
+  | "lactose"
+  | "gluten"
+  | "nuts"
+  | "egg"
+  | "seafood"
+  | "soy"
+  | "vegetarian"
+  | "vegan"
+  | "none";
+
+export interface Assessment {
+  /** null until the wizard is finished; drives the onboarding redirect. */
+  completedAt: string | null;
+  birthYear: number;
+  gender: Gender;
+  heightCm: number;
+  weightKg: number;
+  targetWeightKg: number;
+  activity: ActivityLevel;
+  goal: HealthGoal;
+  conditions: MedicalConditionKey[];
+  allergies: AllergyKey[];
+  notes: string;
+}
+
+/** Everything the calculator derives from an assessment. */
+export interface HealthTargets {
+  age: number;
+  bmi: number;
+  bmr: number;
+  tdee: number;
+  dailyCalories: number;
+  macros: Macros;
+  waterTargetMl: number;
+  proteinPerKg: number;
+  weeklyDeltaKg: number;
+}
+
+/* --------------------------------- Roles -------------------------------- */
+
+export type AppRole = "client" | "specialist";
+
+/* ------------------------ Specialist-side patients ----------------------- */
+
+export interface Patient {
+  id: ID;
+  threadId: ID;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  gender: Gender;
+  age: number;
+  heightCm: number;
+  currentWeightKg: number;
+  startWeightKg: number;
+  targetWeightKg: number;
+  goal: HealthGoal;
+  activity: ActivityLevel;
+  conditions: MedicalConditionKey[];
+  allergies: AllergyKey[];
+  /** 0–100 plan adherence over the last 7 days. */
+  adherencePct: number;
+  lastCheckIn: string;
+  unreadMessages: number;
+  planStatus: "active" | "needsReview" | "expired";
+  joinedAt: string;
+}
+
+/* ----------------------------- Plan drafts ------------------------------- */
+
+/** A meal row the specialist composes in the diet builder. */
+export interface DraftMealItem {
+  id: ID;
+  name: string;
+  amount: string;
+  calories: number;
+  macros: Macros;
+}
+
+export interface DraftMeal {
+  slot: MealSlot;
+  timeHint: string;
+  items: DraftMealItem[];
+  note: string;
+}
+
+export interface DietDraft {
+  patientId: ID;
+  dailyCalories: number;
+  /** Percent split; always normalised to 100. */
+  split: { carbs: number; protein: number; fat: number };
+  meals: DraftMeal[];
+  updatedAt: string;
+}
+
+export interface DraftExercise {
+  id: ID;
+  name: string;
+  latinName: string;
+  targets: MuscleGroup[];
+  sets: number;
+  reps: number;
+  weightKg?: number;
+  restSeconds: number;
+  note: string;
+  previewUrl: string;
+}
+
+export interface WorkoutDraft {
+  patientId: ID;
+  dayIndex: number;
+  title: string;
+  exercises: DraftExercise[];
+  updatedAt: string;
+}
+
+export interface DraftSupplement {
+  id: ID;
+  name: string;
+  latinName: string;
+  kind: "supplement" | "medicine";
+  dosage: string;
+  window: ReminderWindow;
+  timeLabel: string;
+  withFood: boolean;
+  note: string;
+  reminderOn: boolean;
+}
+
+export interface SupplementDraft {
+  patientId: ID;
+  items: DraftSupplement[];
+  updatedAt: string;
+}
+
+/* ----------------------------- Notifications ----------------------------- */
+
+export type NotificationChannel = "meals" | "supplements" | "workout" | "chat";
+
+export type NotificationPermissionState = "unsupported" | "default" | "granted" | "denied";
+
+/** A reminder computed from the plan, waiting for its moment today. */
+export interface ScheduledNotification {
+  /** Stable per day+source, so a reminder never double-fires. */
+  key: string;
+  channel: NotificationChannel;
+  title: string;
+  body: string;
+  /** Epoch ms. */
+  at: number;
+  url: string;
+  actions?: Array<{ action: string; title: string }>;
+}
+
+/** What actually fired — the in-app inbox and the denied-permission fallback. */
+export interface AppNotification {
+  id: ID;
+  channel: NotificationChannel;
+  title: string;
+  body: string;
+  at: string;
+  url: string;
+  read: boolean;
+  /** true when it only ever appeared in-app (permission not granted). */
+  inAppOnly: boolean;
+}

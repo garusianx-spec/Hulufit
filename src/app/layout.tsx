@@ -3,6 +3,8 @@ import { preload } from "react-dom";
 import "./globals.css";
 import { AppStoreProvider } from "@/lib/store/AppStore";
 import { ToastProvider } from "@/components/ui/Toast";
+import { NotificationProvider } from "@/lib/notifications/NotificationProvider";
+import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { ServiceWorkerBridge } from "@/components/layout/ServiceWorkerBridge";
 
 export const metadata: Metadata = {
@@ -66,8 +68,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         */}
         <AppStoreProvider>
           <ToastProvider>
-            {children}
-            <ServiceWorkerBridge />
+            <NotificationProvider>
+              <OnboardingGate />
+              {children}
+              <ServiceWorkerBridge />
+            </NotificationProvider>
           </ToastProvider>
         </AppStoreProvider>
       </body>

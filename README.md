@@ -14,11 +14,13 @@ Mobile-first PWA / Android TWA · Next.js · Tailwind · Framer Motion · full R
 
 A production-shaped front end for a diet, fitness and nutritionist-consultation product:
 five fixed tabs, a real-time consultation chat with a 30 MB attachment pipeline, an
-evidence-based article library, and a body tracker — all RTL, all IRANYekan, light mode only.
+evidence-based article library, a body tracker, a plan-reminder system, a health
+onboarding wizard and a specialist portal — all RTL, all IRANYekan, light mode only.
 
 **There is no auth.** By design the app boots straight into the authenticated dashboard
 with fully populated mock state. See [`docs/ARCHITECTURE.md §2`](docs/ARCHITECTURE.md)
-for the two places sign-in will slot into later.
+for the two places sign-in will slot into later. The onboarding wizard is a *health*
+gate, not an auth gate — the seeded user has already completed it.
 
 ## Quick start
 
@@ -50,9 +52,33 @@ npm run icons      # regenerate public/icons/*.png from the brand mark
 | ④ | **مقالات علمی** | `/articles` | Four domains, search, bookmarks, reader with progress bar, reading time, author credential chip, evidence level and citations |
 | ⑤ | **پروفایل و ترکر** | `/profile` | Weight trend chart, BMI gauge, body measurements, avatar crop/upload modal, subscription, order history, preferences |
 
-Plus `/chat/[threadId]` — the consultation screen, pushed over the tabs.
+Plus `/chat/[threadId]` — the consultation screen, pushed over the tabs —
+`/onboarding` and `/doctor`.
+
+## Doctor View
+
+A mock role switch (header chip, and Profile → نمای برنامه) flips the app into the
+specialist portal, where the bottom nav becomes **بیماران · گفتگوها · مقالات · پروفایل**.
+
+| Screen | What's in it |
+|---|---|
+| **Patient roster** `/doctor` | Practice summary, search and filters (needs review / low adherence / unread), per-patient badges for BMI band, 7-day adherence and weight change |
+| **Patient workspace** `/doctor/[id]` | Context card (targets, conditions, allergies, supervision warning) plus three builders |
+| **Diet builder** | Calorie ceiling, macro split sliders that always total 100, meals by slot, a searchable food library, per-meal notes |
+| **Workout builder** | Day picker, exercise library, sets × reps × rest steppers, per-exercise notes, inline animated movement previews |
+| **Supplement scheduler** | Dosage, time and window per item, reminder toggles, and **ارسال به تایم‌لاین** which writes straight into the client's own supplement timeline and fires a notification |
+| **Chat bridge** | `/chat/:thread?patient=:id` — patient context bar, and the transcript's outgoing side flips to the clinician |
 
 ## Highlighted subsystems
+
+- **Notifications** — meal, supplement, workout and chat reminders derived from the plan
+  on a 30 s tick, delivered through the service worker with action buttons, deduped per
+  day, and always mirrored into an in-app inbox so a denied permission is never a dead
+  end. → [`docs/notifications.md`](docs/notifications.md)
+- **Onboarding assessment** — five steps (biometrics → activity → goal → conditions and
+  allergies → summary) that compute BMI, BMR (Mifflin-St Jeor), TDEE, a goal-adjusted
+  calorie target with a safety floor, macros and a water target, then rewrite the
+  targets the whole client side reads.
 
 - **Real-time chat** — `lib/ws/` mirrors the production socket protocol exactly
   (`message.send` / `message.ack` / `typing` / `read` / `presence` / `history.page`), with
@@ -87,6 +113,7 @@ Light mode only — there is no dark theme and no theme switch.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — structure, shell, RTL rules, state, PWA, mock→API map
 - [`docs/chat-screen.md`](docs/chat-screen.md) — chat component breakdown + attachment pipeline
 - [`docs/avatar-upload-crop.md`](docs/avatar-upload-crop.md) — avatar modal breakdown + crop math
+- [`docs/notifications.md`](docs/notifications.md) — reminder pipeline, permission UX, path to real web push
 - [`docs/twa-packaging.md`](docs/twa-packaging.md) — Bubblewrap, asset links, store checklist
 
 ## Status

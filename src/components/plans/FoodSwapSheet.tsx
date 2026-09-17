@@ -126,11 +126,7 @@ export function FoodSwapSheet({
                                 : "bg-warn-50 text-warn-600",
                             )}
                           >
-                            <span dir="ltr">
-                              {diff > 0 ? "+" : "−"}
-                              {faNumber(Math.abs(diff))}
-                            </span>{" "}
-                            کالری
+                            {faNumber(Math.abs(diff))} کالری {diff > 0 ? "بیشتر" : "کمتر"}
                           </span>
                         )}
                       </div>

@@ -10,11 +10,14 @@ import type { ChatMessage } from "@/types";
 export function MessageBubble({
   message,
   onRetry,
+  perspective = "client",
 }: {
   message: ChatMessage;
   onRetry?: (id: string) => void;
+  /** Which author sits on the outgoing side — flipped in the specialist portal. */
+  perspective?: "client" | "specialist";
 }) {
-  const mine = message.author === "me";
+  const mine = message.author === (perspective === "client" ? "me" : "coach");
   const attachmentOnly = Boolean(message.attachment) && !message.text;
 
   return (

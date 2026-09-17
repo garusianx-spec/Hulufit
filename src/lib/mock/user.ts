@@ -1,4 +1,12 @@
-import type { DailyLog, MeasurementEntry, Order, Subscription, UserProfile, WeightEntry } from "@/types";
+import type {
+  Assessment,
+  DailyLog,
+  MeasurementEntry,
+  Order,
+  Subscription,
+  UserProfile,
+  WeightEntry,
+} from "@/types";
 
 /** Pre-set, fully populated user state — the app lands straight into this. */
 export const currentUser: UserProfile = {
@@ -101,14 +109,17 @@ export const orders: Order[] = [
   },
 ];
 
-export function bmi(weightKg: number, heightCm: number): number {
-  const m = heightCm / 100;
-  return weightKg / (m * m);
-}
-
-export function bmiBand(value: number): { label: string; tone: "sky" | "primary" | "warn" | "danger" } {
-  if (value < 18.5) return { label: "کمبود وزن", tone: "sky" };
-  if (value < 25) return { label: "وزن نرمال", tone: "primary" };
-  if (value < 30) return { label: "اضافه‌وزن", tone: "warn" };
-  return { label: "چاقی", tone: "danger" };
-}
+/** Seeded assessment — the mock user has already been through onboarding. */
+export const currentAssessment: Assessment = {
+  completedAt: daysAgo(48),
+  birthYear: 1373,
+  gender: "female",
+  heightCm: 166,
+  weightKg: 71.2,
+  targetWeightKg: 64,
+  activity: "moderate",
+  goal: "loss",
+  conditions: ["hypothyroid"],
+  allergies: ["lactose"],
+  notes: "صبح‌ها ناشتا تمرین نمی‌کند.",
+};

@@ -7,6 +7,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { PullToRefresh } from "@/components/layout/PullToRefresh";
 import { Avatar, Card, Section, Sep } from "@/components/ui/Bits";
 import { ComplianceRing } from "@/components/today/ComplianceRing";
+import { NotificationPermissionCard } from "@/components/notifications/NotificationPermissionCard";
 import { EnergyCard } from "@/components/today/EnergyCard";
 import { WaterLogger } from "@/components/today/WaterLogger";
 import { WeightQuickLog } from "@/components/today/WeightQuickLog";
@@ -39,7 +40,7 @@ export default function TodayPage() {
   };
 
   return (
-    <AppShell header={<AppHeader notificationsCount={2} />}>
+    <AppShell header={<AppHeader />}>
       <PullToRefresh onRefresh={refresh}>
         <motion.div variants={stagger} initial="hidden" animate="show" className="flex flex-col gap-4 pt-4">
           {/* Greeting */}
@@ -65,6 +66,11 @@ export default function TodayPage() {
               <ChatIcon width={20} height={20} />
               <span className="absolute -left-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-danger-500 ring-2 ring-surface" />
             </Link>
+          </motion.div>
+
+          {/* Notification soft-ask (or the denied / iOS fallback) */}
+          <motion.div variants={item}>
+            <NotificationPermissionCard />
           </motion.div>
 
           {/* Compliance ring */}

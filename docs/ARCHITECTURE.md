@@ -16,14 +16,21 @@ src/
 │   ├── specialists/[id]/        ③ مشاورین      — directory, profile, booking
 │   ├── articles/[slug]/         ④ مقالات علمی  — feed + reader
 │   ├── profile/                 ⑤ پروفایل و ترکر
+│   ├── onboarding/              health & biometrics assessment wizard
+│   ├── doctor/[patientId]/      specialist portal: roster + plan builders
 │   └── chat/[threadId]/         consultation chat (pushed, no bottom nav)
 ├── components/
-│   ├── layout/                  AppShell · AppHeader · BottomNav · PullToRefresh · Logo
-│   ├── ui/                      Sheet · Toast · ProgressRing · Bits (Card/Chip/Toggle/…) · Icons
+│   ├── layout/                  AppShell · AppHeader · BottomNav · PullToRefresh · Logo · RoleSwitcher
+│   ├── ui/                      Sheet · Toast · ProgressRing · Bits (Card/Chip/Toggle/Sep/…) · Icons
+│   ├── onboarding/              OnboardingWizard · OnboardingGate · form primitives
+│   ├── notifications/           PermissionCard · Inbox (+ channel settings)
+│   ├── doctor/                  PatientCard · Diet/Workout builders · SupplementScheduler
 │   ├── today/ plans/ chat/ articles/ specialists/ profile/
 ├── lib/
 │   ├── format.ts                Persian digits, Jalali dates, file sizes, cx()
-│   ├── mock/                    fully populated demo state
+│   ├── health/calc.ts           BMI · BMR (Mifflin-St Jeor) · TDEE · macro targets
+│   ├── notifications/           permission · scheduler · driver hook · provider
+│   ├── mock/                    fully populated demo state (incl. patients, libraries)
 │   ├── store/AppStore.tsx       reducer + context, persisted to localStorage
 │   ├── ws/                      mockSocket.ts · useChatSocket.ts
 │   ├── upload/                  fileGuards.ts (30 MB) · useFileUpload.ts
@@ -38,7 +45,7 @@ src/
 
 ## 2. Authentication — deliberately absent
 
-There is **no** login, sign-up, OTP, splash gate or onboarding. `app/layout.tsx` mounts
+There is **no** login, sign-up, OTP or splash gate. `app/layout.tsx` mounts
 `AppStoreProvider` seeded from `lib/mock/user.ts`, and `/` renders the authenticated
 dashboard immediately.
 
@@ -48,6 +55,29 @@ When auth lands, it slots in at exactly two points and nothing else moves:
 2. `AppStoreProvider` hydrating from `/api/me` instead of the mock module.
 
 Every screen already reads the user through `useAppStore()`, so no component needs to change.
+
+### Onboarding is a health gate, not an auth gate
+
+`OnboardingGate` routes to `/onboarding` when `assessment.completedAt` is `null`. The
+seeded mock user has already completed it, so the demo still lands straight on the
+dashboard — the no-auth-gate rule is intact. Clearing it is an explicit action:
+**Profile → ارزیابی سلامت → شبیه‌سازی کاربر جدید**. The gate waits for `hydrated`
+before redirecting, so a returning user is never bounced.
+
+## 2b. Roles
+
+`state.role` is `"client" | "specialist"`, flipped by `RoleSwitcher` (header chip and
+Profile). It stands in for the role claim a real session would carry. Switching also
+navigates to that role's home, because `BottomNav` swaps its tab set:
+
+| Role | Tabs |
+|---|---|
+| client | امروز · برنامه‌های من · مشاورین · مقالات · پروفایل |
+| specialist | بیماران · گفتگوها · مقالات · پروفایل |
+
+The consultation screen reads the role too: opened as `/chat/:id?patient=:pid` from the
+portal it shows a `PatientContextBar` and flips the transcript's outgoing side, so the
+clinician's own messages sit where they expect them.
 
 ---
 
@@ -84,6 +114,14 @@ that shaped the components:
   stay predictable, while the Persian labels inside still shape correctly.
 - **SVG transforms** set `transform-box: view-box` before `transform-origin`, or limbs and
   needles rotate about the wrong pivot.
+- **Signed values in prose** are written as words (کاهش/افزایش, کمتر/بیشتر) or arrows
+  (▼ ▲) rather than a bare `−`, which bidi floats away from its number.
+- **Years** are rendered with `toFa()`, not `faNumber()` — a Jalali year must not be
+  grouped as ۱٬۳۷۳.
+- **Sheets render through a portal on `<body>`.** `position: fixed` resolves against the
+  nearest ancestor with a transform, filter, `backdrop-filter` or containment — and the
+  app header has `backdrop-blur`. Without the portal, a sheet opened from the header is
+  clipped to the header's box.
 
 Typography is IRANYekan only. The `IRANYekanWeb` faces live in `public/fonts/`: Light 300,
 Bold 700, ExtraBold 800, Black 900, ExtraBlack 950. The set has no Regular (400) or
@@ -98,8 +136,13 @@ drop-in that restores the exact weights.
 ## 5. State
 
 One reducer in `lib/store/AppStore.tsx`, persisted to `localStorage` under
-`hellofit.state.v1`, covering water, weight, meal/exercise/supplement completion, food
-swaps, bookmarks and the avatar. It also derives the dashboard's compliance ring:
+`hellofit.state.v2`, covering water, weight, meal/exercise/supplement completion, food
+swaps, bookmarks, the avatar, the role, the onboarding assessment, notification
+channels + inbox, and the specialist's plan drafts. Hydration merges nested slices
+field-by-field, so a blob written by an older build cannot drop a key newer code reads.
+
+It derives `targets` (from the assessment, via `lib/health/calc.ts`), the unread
+notification count, `needsOnboarding`, and the dashboard's compliance ring:
 
 ```
 overall = meals×0.40 + workout×0.25 + supplements×0.15 + water×0.20
@@ -119,7 +162,7 @@ scoped to the screen, because it is transport state rather than user state.
 | Registration | `components/layout/ServiceWorkerBridge.tsx`, production only, after `load` |
 | Icons | `scripts/generate-icons.mjs` — dependency-free PNG encoder, `npm run icons` |
 | Digital Asset Links | `public/.well-known/assetlinks.json` — fingerprint placeholder |
-| Push | `sw.js` handles `push` / `notificationclick` for supplement reminders |
+| Push | `sw.js` handles `push`, `message`, `notificationclick`, `notificationclose` — see [`notifications.md`](notifications.md) |
 
 Health data is never cached: `/api/*` is excluded from the service worker outright.
 
@@ -140,3 +183,7 @@ or through a hook, so replacing it is mechanical:
 | `mock/articles.ts` | `GET /api/articles?…` |
 | `mock/chat.ts` + `ws/mockSocket.ts` | `wss://…/v1/threads/:id` + `GET /api/threads/:id/messages` |
 | `useFileUpload`'s `mockTransport` | chunked `PUT /api/uploads/:id/chunk/:n` |
+| `mock/patients.ts` | `GET /api/specialist/patients` |
+| `mock/library.ts` | `GET /api/library/{foods,exercises,supplements}` |
+| `doctor/*` drafts in the store | `PUT /api/specialist/patients/:id/plans/{diet,workout,supplements}` |
+| client-side reminder loop | web push from the server (see `notifications.md §5`) |

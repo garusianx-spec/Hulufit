@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AppShell, NavSpacer } from "@/components/layout/AppShell";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -10,8 +11,12 @@ import { Avatar, Card, ProgressBar, Section, Sep, Stat, Toggle } from "@/compone
 import { AvatarUploadCropModal } from "@/components/profile/AvatarUploadCropModal";
 import { WeightTrendChart } from "@/components/profile/WeightTrendChart";
 import { BmiGauge } from "@/components/profile/BmiGauge";
-import { CameraIcon, ChevronLeft, ClockIcon, ShieldIcon } from "@/components/ui/Icons";
+import { BellIcon, CameraIcon, ChevronLeft, ClockIcon, RefreshIcon, ShieldIcon } from "@/components/ui/Icons";
 import { useAppStore } from "@/lib/store/AppStore";
+import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
+import { NotificationInbox } from "@/components/notifications/NotificationInbox";
+import { useNotificationCenter } from "@/lib/notifications/NotificationProvider";
+import { ACTIVITY_META, ALLERGY_LABELS, CONDITION_LABELS, GOAL_META } from "@/lib/health/calc";
 import { measurements, orders, subscription } from "@/lib/mock/user";
 import { cx, faDate, faNumber, faToman } from "@/lib/format";
 
@@ -23,8 +28,11 @@ const PREFERENCES = [
 ];
 
 export default function ProfilePage() {
-  const { user, weights, dispatch } = useAppStore();
+  const router = useRouter();
+  const { user, weights, assessment, targets, dispatch } = useAppStore();
+  const { permission, unread } = useNotificationCenter();
   const [avatarOpen, setAvatarOpen] = useState(false);
+  const [inboxOpen, setInboxOpen] = useState(false);
   const [prefs, setPrefs] = useState(() =>
     Object.fromEntries(PREFERENCES.map((p) => [p.key, p.on])) as Record<string, boolean>,
   );
@@ -125,6 +133,103 @@ export default function ProfilePage() {
             </Card>
           </Section>
 
+          {/* Role switcher */}
+          <Section title="نمای برنامه">
+            <Card className="flex flex-col gap-2.5">
+              <p className="text-2xs leading-5 text-ink-muted">
+                برای مرور پرتال متخصص، نما را عوض کنید. این کلید جای نقشی است که در نسخه‌ی نهایی
+                از حساب کاربری خوانده می‌شود.
+              </p>
+              <RoleSwitcher />
+            </Card>
+          </Section>
+
+          {/* Health assessment */}
+          <Section title="ارزیابی سلامت">
+            <Card className="flex flex-col gap-3">
+              <div className="grid grid-cols-3 divide-x divide-x-reverse divide-line">
+                <Stat label="کالری روزانه" value={faNumber(targets.dailyCalories)} tone="primary" />
+                <Stat label="سوخت‌وساز پایه" value={faNumber(targets.bmr)} />
+                <Stat label="مصرف روزانه" value={faNumber(targets.tdee)} tone="sky" />
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 border-t border-line pt-3">
+                <span className="rounded-pill bg-primary-50 px-2 py-1 text-[0.6rem] font-bold text-primary-700">
+                  {GOAL_META[assessment.goal].label}
+                </span>
+                <span className="rounded-pill bg-sky-50 px-2 py-1 text-[0.6rem] font-bold text-sky-700">
+                  {ACTIVITY_META[assessment.activity].label}
+                </span>
+                {assessment.conditions
+                  .filter((c) => c !== "none")
+                  .map((c) => (
+                    <span
+                      key={c}
+                      className="rounded-pill bg-warn-50 px-2 py-1 text-[0.6rem] font-bold text-warn-600"
+                    >
+                      {CONDITION_LABELS[c]}
+                    </span>
+                  ))}
+                {assessment.allergies
+                  .filter((a) => a !== "none")
+                  .map((a) => (
+                    <span key={a} className="rounded-pill bg-canvas px-2 py-1 text-[0.6rem] text-ink-muted">
+                      {ALLERGY_LABELS[a]}
+                    </span>
+                  ))}
+              </div>
+
+              <div className="flex gap-2">
+                <Link href="/onboarding" className="app-btn-ghost flex-1 py-2 text-xs">
+                  ویرایش ارزیابی
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispatch({ type: "assessment/reset" });
+                    router.push("/onboarding");
+                  }}
+                  className="app-btn-ghost shrink-0 px-3 py-2 text-xs"
+                >
+                  <RefreshIcon width={14} height={14} />
+                  شبیه‌سازی کاربر جدید
+                </button>
+              </div>
+            </Card>
+          </Section>
+
+          {/* Notifications */}
+          <Section title="اعلان‌ها">
+            <Card className="p-0">
+              <button
+                type="button"
+                onClick={() => setInboxOpen(true)}
+                className="flex w-full items-center gap-3 p-3.5 text-right"
+              >
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-pill bg-primary-50 text-primary-700">
+                  <BellIcon width={19} height={19} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-xs font-bold text-ink">صندوق اعلان‌ها و یادآورها</span>
+                  <span className="mt-0.5 block text-2xs text-ink-muted">
+                    {permission === "granted"
+                      ? "اعلان سیستمی فعال است"
+                      : permission === "denied"
+                        ? "اعلان سیستمی مسدود — فقط داخل برنامه"
+                        : "اعلان سیستمی هنوز فعال نشده"}
+                    {unread > 0 && (
+                      <>
+                        <Sep />
+                        {faNumber(unread)} خوانده‌نشده
+                      </>
+                    )}
+                  </span>
+                </span>
+                <ChevronLeft width={16} height={16} className="shrink-0 text-ink-soft" />
+              </button>
+            </Card>
+          </Section>
+
           {/* Subscription */}
           <Section title="اشتراک من">
             <Card className="flex flex-col gap-3">
@@ -220,6 +325,8 @@ export default function ProfilePage() {
         </div>
         <NavSpacer />
       </PullToRefresh>
+
+      <NotificationInbox open={inboxOpen} onClose={() => setInboxOpen(false)} />
 
       <AvatarUploadCropModal
         open={avatarOpen}

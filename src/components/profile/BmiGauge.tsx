@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Card, Sep } from "@/components/ui/Bits";
-import { bmi, bmiBand } from "@/lib/mock/user";
+import { bmi, bmiBand } from "@/lib/health/calc";
 import { clamp, faNumber } from "@/lib/format";
 
 const BANDS = [
