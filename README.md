@@ -34,10 +34,11 @@ npm run typecheck  # tsc --noEmit
 npm run icons      # regenerate public/icons/*.png from the brand mark
 ```
 
-> **Fonts.** IRANYekan is commercially licensed and is not committed. Drop the five
-> `woff2` files into `public/fonts/` as described in
-> [`public/fonts/README.md`](public/fonts/README.md). Until then the app falls back to
-> Vazirmatn → Tahoma and stays fully legible.
+> **Fonts.** IRANYekanWeb is installed — Light 300, Bold 700, ExtraBold 800, Black 900,
+> ExtraBlack 950, committed under `public/fonts/`. The set has no Regular (400) or
+> Medium (500), so the Light face is declared across 300–500; see
+> [`public/fonts/README.md`](public/fonts/README.md) for the two-file drop-in that
+> restores the exact weights.
 
 ## The five tabs
 
@@ -77,7 +78,7 @@ Plus `/chat/[threadId]` — the consultation screen, pushed over the tabs.
 | Primary (health) | `#059669` |
 | Secondary (sky) | `#0284C7` |
 | Ink / muted / soft | `#0F172A` / `#64748B` / `#94A3B8` |
-| Type | IRANYekan 300 · 400 · 500 · 700 · 800 |
+| Type | IRANYekanWeb — Light 300 (body, via a 300–500 range) · Bold 700 · ExtraBold 800 |
 
 Light mode only — there is no dark theme and no theme switch.
 

@@ -10,8 +10,8 @@ const config: Config = {
     extend: {
       fontFamily: {
         // Every piece of type in the app resolves to IRANYekan first.
-        sans: ["IRANYekan", "IRANYekanX", "Vazirmatn", "Tahoma", "system-ui", "sans-serif"],
-        yekan: ["IRANYekan", "IRANYekanX", "Vazirmatn", "Tahoma", "sans-serif"],
+        sans: ["IRANYekan", "Vazirmatn", "Tahoma", "system-ui", "sans-serif"],
+        yekan: ["IRANYekan", "Vazirmatn", "Tahoma", "sans-serif"],
       },
       colors: {
         canvas: "#F8FAFC",

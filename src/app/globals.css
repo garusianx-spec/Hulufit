@@ -4,44 +4,52 @@
 
 /* ------------------------------------------------------------------
    IRANYekan — the single typeface of HelloFit / هلوفیت.
-   Drop the licensed woff2 files into /public/fonts (see fonts/README.md).
-   Weights map: 300 Light · 400 Regular · 500 Medium · 700 Bold · 800 ExtraBold
+
+   Files live in /public/fonts (see fonts/README.md). The supplied set is
+   IRANYekanWeb Light 300 · Bold 700 · ExtraBold 800 · Black 900 · ExtraBlack 950.
+
+   Regular (400) and Medium (500) are NOT in that set, so the Light face is
+   declared over the 300–500 range: body copy and `font-medium` resolve to
+   Light rather than falling out of the family or being synthesised. Drop
+   IRANYekanWebRegular.woff2 / IRANYekanWebMedium.woff2 into /public/fonts and
+   swap the ranges below for exact faces — nothing else changes.
    ------------------------------------------------------------------ */
 @font-face {
   font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanX-Light.woff2") format("woff2");
-  font-weight: 300;
+  src: url("/fonts/IRANYekanWebLight.woff2") format("woff2");
+  font-weight: 300 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanX-Regular.woff2") format("woff2");
-  font-weight: 400;
+  src: url("/fonts/IRANYekanWebBold.woff2") format("woff2");
+  font-weight: 600 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanX-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanX-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanX-ExtraBold.woff2") format("woff2");
+  src: url("/fonts/IRANYekanWebExtraBold.woff2") format("woff2");
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanWebBlack.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanWebExtraBlack.woff2") format("woff2");
+  font-weight: 950;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 :root {
   --canvas: #f8fafc;
@@ -64,7 +72,7 @@
 
 html {
   /* Numerals, headings and microcopy all inherit IRANYekan. */
-  font-family: "IRANYekan", "IRANYekanX", "Vazirmatn", Tahoma, system-ui, sans-serif;
+  font-family: "IRANYekan", "Vazirmatn", Tahoma, system-ui, sans-serif;
   font-feature-settings: "ss01", "ss02";
   -webkit-text-size-adjust: 100%;
 }

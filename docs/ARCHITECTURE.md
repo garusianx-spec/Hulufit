@@ -85,9 +85,13 @@ that shaped the components:
 - **SVG transforms** set `transform-box: view-box` before `transform-origin`, or limbs and
   needles rotate about the wrong pivot.
 
-Typography is IRANYekan only, at weights 300/400/500/700/800. The licensed `woff2` files
-are not committed — see `public/fonts/README.md`; the stack falls back to
-Vazirmatn → Tahoma until they are dropped in.
+Typography is IRANYekan only. The `IRANYekanWeb` faces live in `public/fonts/`: Light 300,
+Bold 700, ExtraBold 800, Black 900, ExtraBlack 950. The set has no Regular (400) or
+Medium (500), so `globals.css` declares Light across the **300–500** range — body copy and
+`font-medium` land on a real face instead of dropping out of the family or being
+synthesised. Only Light, Bold and ExtraBold are ever matched (~76 KB total) and those
+three are preloaded from `layout.tsx`. See `public/fonts/README.md` for the two-file
+drop-in that restores the exact weights.
 
 ---
 

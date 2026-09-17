@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { preload } from "react-dom";
 import "./globals.css";
 import { AppStoreProvider } from "@/lib/store/AppStore";
 import { ToastProvider } from "@/components/ui/Toast";
@@ -38,7 +39,24 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+/**
+ * The three faces every screen actually resolves to — body and `font-medium` → Light,
+ * `font-bold` → Bold, `font-extrabold` → ExtraBold. Preloading removes the swap flash
+ * on a TWA cold start. Black/ExtraBlack are declared in globals.css but unmatched, so
+ * the browser never fetches them.
+ */
+const PRELOADED_FACES = [
+  "/fonts/IRANYekanWebLight.woff2",
+  "/fonts/IRANYekanWebBold.woff2",
+  "/fonts/IRANYekanWebExtraBold.woff2",
+];
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // ReactDOM.preload emits exactly one <link> per resource, in <head>.
+  for (const href of PRELOADED_FACES) {
+    preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+  }
+
   return (
     <html lang="fa" dir="rtl">
       <body className="font-sans antialiased">
