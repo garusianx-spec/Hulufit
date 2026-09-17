@@ -1,0 +1,132 @@
+{
+  "id": "/?source=pwa",
+  "name": "هلوفیت | HelloFit",
+  "short_name": "هلوفیت",
+  "description": "هلوفیت — پلتفرم جامع رژیم غذایی، برنامه تمرینی و مشاوره آنلاین با متخصصین تغذیه و مربیان بدنسازی.",
+  "lang": "fa-IR",
+  "dir": "rtl",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#F8FAFC",
+  "theme_color": "#059669",
+  "categories": ["health", "fitness", "medical", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/monochrome-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/today-mobile.png",
+      "sizes": "1080x2280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "داشبورد امروز — کالری، آب و حلقه پایبندی"
+    },
+    {
+      "src": "/screenshots/plans-mobile.png",
+      "sizes": "1080x2280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "برنامه‌های من — رژیم، تمرین و یادآور مکمل"
+    },
+    {
+      "src": "/screenshots/chat-mobile.png",
+      "sizes": "1080x2280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "گفتگوی زنده با متخصص تغذیه"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "برنامه غذایی امروز",
+      "short_name": "رژیم",
+      "description": "وعده‌های امروز، شمارش کالری و جایگزین غذا",
+      "url": "/plans?tab=diet&source=shortcut",
+      "icons": [{ "src": "/icons/shortcut-diet.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "برنامه تمرینی",
+      "short_name": "تمرین",
+      "description": "تمرین امروز و ثبت ست‌ها",
+      "url": "/plans?tab=workout&source=shortcut",
+      "icons": [{ "src": "/icons/shortcut-workout.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "گفتگو با مشاور",
+      "short_name": "مشاوره",
+      "description": "چت زنده با متخصص تغذیه",
+      "url": "/chat/th_1?source=shortcut",
+      "icons": [{ "src": "/icons/shortcut-chat.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ],
+  "share_target": {
+    "action": "/chat/th_1",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "files": [
+        {
+          "name": "attachments",
+          "accept": [
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "application/pdf",
+            "audio/mpeg",
+            "audio/mp4",
+            "audio/webm"
+          ]
+        }
+      ]
+    }
+  },
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "handle_links": "preferred",
+  "edge_side_panel": {
+    "preferred_width": 420
+  },
+  "related_applications": [
+    {
+      "platform": "play",
+      "id": "app.hellofit.twa",
+      "url": "https://play.google.com/store/apps/details?id=app.hellofit.twa"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------
+   IRANYekan — the single typeface of HelloFit / هلوفیت.
+   Drop the licensed woff2 files into /public/fonts (see fonts/README.md).
+   Weights map: 300 Light · 400 Regular · 500 Medium · 700 Bold · 800 ExtraBold
+   ------------------------------------------------------------------ */
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanX-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanX-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanX-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanX-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IRANYekan";
+  src: url("/fonts/IRANYekanX-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --canvas: #f8fafc;
+  --surface: #ffffff;
+  --line: #e2e8f0;
+  --ink: #0f172a;
+  --ink-muted: #64748b;
+  --primary: #059669;
+  --secondary: #0284c7;
+  --header-h: 3.5rem;
+  --nav-h: 4.25rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* Numerals, headings and microcopy all inherit IRANYekan. */
+  font-family: "IRANYekan", "IRANYekanX", "Vazirmatn", Tahoma, system-ui, sans-serif;
+  font-feature-settings: "ss01", "ss02";
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  /* Standalone TWA: the page itself never scrolls, panes scroll instead. */
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Persian numerals wherever the design calls for native digits. */
+.nums-fa {
+  font-variant-numeric: normal;
+  font-feature-settings: "ss01";
+}
+
+/* Latin-locked numerals (timers, file sizes in KB/MB) */
+.nums-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .app-card {
+    @apply rounded-card border border-line bg-surface shadow-card;
+  }
+  .app-chip {
+    @apply inline-flex items-center gap-1 rounded-pill border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors;
+  }
+  .app-chip-active {
+    @apply border-primary-600 bg-primary-50 text-primary-700;
+  }
+  .app-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-pill px-4 py-2.5 text-sm font-bold transition-all active:scale-[0.97];
+  }
+  .app-btn-primary {
+    @apply app-btn bg-primary-600 text-white shadow-float;
+  }
+  .app-btn-ghost {
+    @apply app-btn border border-line bg-surface text-ink;
+  }
+  .app-btn-sky {
+    @apply app-btn bg-sky-600 text-white;
+  }
+  .section-title {
+    @apply text-base font-extrabold text-ink;
+  }
+  .hairline {
+    @apply border-b border-line;
+  }
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: var(--safe-top);
+  }
+  .pb-safe {
+    padding-bottom: var(--safe-bottom);
+  }
+  .h-safe-header {
+    height: calc(var(--header-h) + var(--safe-top));
+  }
+  .scroll-pane {
+    /* Momentum scrolling inside a fixed shell. */
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .scroll-pane::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Respect users who ask the OS for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

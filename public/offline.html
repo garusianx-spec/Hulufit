@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#059669" />
+    <title>هلوفیت — بدون اتصال</title>
+    <style>
+      @font-face {
+        font-family: "IRANYekan";
+        src: url("/fonts/IRANYekanX-Regular.woff2") format("woff2");
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "IRANYekan";
+        src: url("/fonts/IRANYekanX-Bold.woff2") format("woff2");
+        font-weight: 700;
+        font-display: swap;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: "IRANYekan", Tahoma, system-ui, sans-serif;
+      }
+      .card {
+        max-width: 360px;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 28px 24px;
+        text-align: center;
+        box-shadow: 0 8px 24px -12px rgb(15 23 42 / 0.1);
+      }
+      h1 { font-size: 1.05rem; margin: 16px 0 8px; }
+      p { font-size: 0.8rem; line-height: 1.9; color: #64748b; margin: 0 0 20px; }
+      button {
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.8rem;
+        border: 0;
+        border-radius: 999px;
+        padding: 12px 24px;
+        background: #059669;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <svg width="56" height="56" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <rect width="48" height="48" rx="14" fill="#059669" />
+        <path d="M34 13c0 9.5-5.6 16-13.5 16C17 29 15 27.4 15 24.6 15 18.6 22.6 13.6 34 13Z" fill="#fff" fill-opacity=".95"/>
+      </svg>
+      <h1>اتصال اینترنت برقرار نیست</h1>
+      <p>
+        برنامه‌ی امروز شما ذخیره شده است. به محض وصل شدن به اینترنت، تغییرات و پیام‌های شما
+        هم‌گام‌سازی می‌شوند.
+      </p>
+      <button onclick="location.reload()">تلاش دوباره</button>
+    </div>
+  </body>
+</html>
