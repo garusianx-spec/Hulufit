@@ -1,67 +1,42 @@
 # IRANYekan font files
 
-HelloFit / هلوفیت uses **IRANYekan (ایران‌یکان)** exclusively — headings, body copy,
-numerals and microcopy alike.
+HelloFit / هلوفیت uses **IRANYekan** exclusively — headings, body copy, numerals
+and microcopy alike, across the client app, the clinician workspace and the
+operations console.
 
 ## What is installed
 
-The `IRANYekanWeb` (web-optimised) faces supplied for this project are committed here:
+Two cuts of the same design live here.
 
-| File | Weight | Size | Used for |
-|---|---|---|---|
-| `IRANYekanWebLight.woff2` | 300 | 25 KB | body copy, `font-medium` — declared over the **300–500** range |
-| `IRANYekanWebBold.woff2` | 700 | 25 KB | `font-bold` — declared over **600–700** |
-| `IRANYekanWebExtraBold.woff2` | 800 | 24 KB | `font-extrabold` (headings, section titles) |
-| `IRANYekanWebBlack.woff2` | 900 | 23 KB | declared, currently unused |
-| `IRANYekanWebExtraBlack.woff2` | 950 | 25 KB | declared, currently unused |
+| File | Weight | Role |
+|---|---|---|
+| `IRANYekanX-Regular.woff2` | 400 | body copy — declared over **300–400** |
+| `IRANYekanX-Medium.woff2` | 500 | `font-medium` |
+| `IRANYekanX-Bold.woff2` | 700 | `font-bold` — declared over **600–700** |
+| `IRANYekanWebExtraBold.woff2` | 800 | `font-extrabold` — headings and section titles |
+| `IRANYekanWebBlack.woff2` | 900 | declared over **900–950**, currently unused |
+| `IRANYekanWebLight.woff2` | 300 | superseded by X Regular; kept for reference |
+| `IRANYekanWebBold.woff2` | 700 | superseded by X Bold; kept for reference |
+| `IRANYekanWebExtraBlack.woff2` | 950 | covered by the 900–950 range |
 
-All five carry the full Persian alphabet, Persian digits (U+06F0–U+06F9), the Persian
-thousands (`٬`) and decimal (`٫`) marks, and Latin — verified glyph-by-glyph.
+**X owns the text range.** It is the newer cut and covers 400/500/700, which is
+where essentially the whole UI sits. **Web's ExtraBold carries 800** — the app's
+heading weight — and reads a clear step above X Bold while staying on the same
+skeleton.
 
-Only Light, Bold and ExtraBold are ever matched by a CSS rule, so a page downloads
-~76 KB of font. Those three are preloaded in `src/app/layout.tsx`; Black and ExtraBlack
-are declared but never fetched.
+Four faces are ever matched by a rule (~108 KB); the rest are never fetched.
+Regular, Bold and ExtraBold are preloaded from `src/app/layout.tsx`; Medium
+loads normally, since it appears on far fewer nodes.
 
-## Missing: Regular (400) and Medium (500)
-
-The supplied set jumps from Light (300) to Bold (700). Because IRANYekanWeb Light is a
-comfortable text weight, `globals.css` declares it across **300–500** so body copy and
-`font-medium` resolve to a real face rather than dropping out of the family or being
-synthesised by the browser.
-
-To use the exact faces instead, drop these two files in beside the others:
-
-```
-public/fonts/IRANYekanWebRegular.woff2    # 400
-public/fonts/IRANYekanWebMedium.woff2     # 500
-```
-
-then narrow the Light rule in `src/app/globals.css` back to `font-weight: 300;` and add:
-
-```css
-@font-face {
-  font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanWebRegular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "IRANYekan";
-  src: url("/fonts/IRANYekanWebMedium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-```
-
-Nothing else changes — no component references a face directly.
+All faces carry the full Persian alphabet, Persian digits (U+06F0–U+06F9), the
+thousands (`٬`) and decimal (`٫`) marks and Latin — verified glyph by glyph.
 
 ## Notes
 
 - `font-display: swap` on every face, so a cold TWA launch never blocks on text.
-- Persian numerals come from `src/lib/format.ts` (`toFa`, `faNumber`, …), not from font
-  features, so digits stay correct even on the fallback stack.
-- The fallback stack is `IRANYekan → Vazirmatn → Tahoma → system-ui`.
-- These faces are already web-subset; further subsetting to `arabic + latin + digits`
-  would shave a few KB more if it matters for the TWA bundle.
+- Persian numerals come from `src/lib/format.ts` (`toFa`, `faNumber`, …), not
+  from font features, so digits stay correct even on the fallback stack.
+- Fallback stack: `IRANYekan → Vazirmatn → Tahoma → system-ui`.
+- The two families have different units-per-em (X 1000, Web 2200). That is
+  normalised by the renderer and does not affect layout; what matters is that
+  they share a design lineage, which is why they mix without a visible seam.

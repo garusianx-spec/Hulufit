@@ -42,14 +42,13 @@ export const viewport: Viewport = {
 };
 
 /**
- * The three faces every screen actually resolves to — body and `font-medium` → Light,
- * `font-bold` → Bold, `font-extrabold` → ExtraBold. Preloading removes the swap flash
- * on a TWA cold start. Black/ExtraBlack are declared in globals.css but unmatched, so
- * the browser never fetches them.
+ * The three faces on the critical path — body → X Regular, `font-bold` → X Bold,
+ * `font-extrabold` → Web ExtraBold. `font-medium` (X Medium) is used on far fewer
+ * nodes, so it loads normally rather than competing for bandwidth on first paint.
  */
 const PRELOADED_FACES = [
-  "/fonts/IRANYekanWebLight.woff2",
-  "/fonts/IRANYekanWebBold.woff2",
+  "/fonts/IRANYekanX-Regular.woff2",
+  "/fonts/IRANYekanX-Bold.woff2",
   "/fonts/IRANYekanWebExtraBold.woff2",
 ];
 

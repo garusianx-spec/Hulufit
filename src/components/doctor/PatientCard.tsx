@@ -95,7 +95,7 @@ export function PatientCard({ patient }: { patient: Patient }) {
             ویرایش برنامه‌ها
           </Link>
           <Link
-            href={`/chat/${patient.threadId}?patient=${patient.id}`}
+            href={`/doctor/desk?patient=${patient.id}`}
             aria-label={`گفتگو با ${patient.firstName}`}
             className="tap-target grid h-9 w-9 shrink-0 place-items-center rounded-pill border border-line text-sky-700"
           >

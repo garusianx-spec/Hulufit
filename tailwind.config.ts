@@ -46,6 +46,8 @@ const config: Config = {
           DEFAULT: "#0284C7",
         },
         warn: { 50: "#FFFBEB", 100: "#FEF3C7", 500: "#F59E0B", 600: "#D97706" },
+        // The logo's coral. Brand mark only — the UI accent stays emerald.
+        brand: { 50: "#FFF1F1", 100: "#FFE0E0", 400: "#FF7A7A", 500: "#FF5252", 600: "#E63F3F", DEFAULT: "#FF5252" },
         danger: { 50: "#FEF2F2", 100: "#FEE2E2", 500: "#EF4444", 600: "#DC2626" },
       },
       borderRadius: {

@@ -25,7 +25,7 @@ const CLIENT_TABS = [
 /** Doctor View swaps the first three tabs for the specialist's own workflow. */
 const SPECIALIST_TABS = [
   { href: "/doctor", label: "بیماران", Icon: CoachIcon },
-  { href: "/chat/th_1", label: "گفتگوها", Icon: ChatIcon },
+  { href: "/doctor/desk", label: "میز مشاوره", Icon: ChatIcon },
   { href: "/articles", label: "مقالات", Icon: ArticleIcon },
   { href: "/profile", label: "پروفایل", Icon: ProfileIcon },
 ] as const;
@@ -39,6 +39,10 @@ function isActive(pathname: string, href: string) {
 export function BottomNav() {
   const pathname = usePathname() || "/";
   const { role } = useAppStore();
+
+  // The operations console is a desktop surface with its own sidebar.
+  if (role === "admin" || pathname.startsWith("/admin")) return null;
+
   const tabs = role === "specialist" ? SPECIALIST_TABS : CLIENT_TABS;
 
   return (

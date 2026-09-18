@@ -26,7 +26,20 @@ import type { Attachment, UploadTask } from "@/types";
  *                            ▼
  *   useChatSocket ──message.send──▶ socket ──ack──▶ optimistic bubble updates
  */
-export function ChatScreen({ threadId, patientId }: { threadId: string; patientId?: string }) {
+export function ChatScreen({
+  threadId,
+  patientId,
+  clinicianView,
+}: {
+  threadId: string;
+  patientId?: string;
+  /**
+   * Forces the clinician perspective regardless of the active role — the
+   * consultation desk is a clinician surface even when an admin is looking at
+   * it. Left undefined, the role decides.
+   */
+  clinicianView?: boolean;
+}) {
   const toast = useToast();
   const { notify, channels } = useNotificationCenter();
   const { role } = useAppStore();
@@ -34,7 +47,7 @@ export function ChatScreen({ threadId, patientId }: { threadId: string; patientI
   // Opened from the specialist portal: the thread is the patient's, and the
   // outgoing side of the transcript flips to the clinician.
   const patient = patientId ? findPatient(patientId) : undefined;
-  const asSpecialist = role === "specialist" && Boolean(patient);
+  const asSpecialist = (clinicianView ?? role === "specialist") && Boolean(patient);
 
   const thread = {
     ...chatThread,

@@ -168,7 +168,7 @@ export default function PatientWorkspacePage() {
 
             {/* Bridge into the consultation, patient context pre-loaded */}
             <Link
-              href={`/chat/${patient.threadId}?patient=${patient.id}`}
+              href={`/doctor/desk?patient=${patient.id}`}
               className="app-btn-sky w-full"
             >
               <ChatIcon width={17} height={17} />

@@ -12,10 +12,17 @@ Mobile-first PWA / Android TWA · Next.js · Tailwind · Framer Motion · full R
 
 ## What this is
 
-A production-shaped front end for a diet, fitness and nutritionist-consultation product:
-five fixed tabs, a real-time consultation chat with a 30 MB attachment pipeline, an
-evidence-based article library, a body tracker, a plan-reminder system, a health
-onboarding wizard and a specialist portal — all RTL, all IRANYekan, light mode only.
+A diet, fitness and nutritionist-consultation platform: a mobile PWA/TWA for
+clients, a clinician workspace, an operations console, and the realtime gateway
+behind them.
+All RTL, all IRANYekan, light mode only.
+
+| Surface | Route | Who |
+|---|---|---|
+| Client app | `/` … `/profile` | مراجع — five fixed tabs on a phone |
+| Clinician workspace | `/doctor`, `/doctor/desk` | متخصص — roster, plan builders, consultation desk |
+| Operations console | `/admin` | مدیر — analytics, users, specialists, content |
+| Gateway | `server/` | Socket.io + media + RBAC API |
 
 **There is no auth.** By design the app boots straight into the authenticated dashboard
 with fully populated mock state. See [`docs/ARCHITECTURE.md §2`](docs/ARCHITECTURE.md)
@@ -25,8 +32,23 @@ gate, not an auth gate — the seeded user has already completed it.
 ## Quick start
 
 ```bash
+# web — three portals, one Next app
 npm install
-npm run dev        # http://localhost:3000
+npm run dev              # http://localhost:3000
+
+# gateway — realtime chat, media, RBAC API
+cd server
+cp .env.example .env
+npm install
+npm run dev              # http://localhost:4000
+npm test                 # 14 integration tests, no containers needed
+```
+
+With object storage:
+
+```bash
+cd server && JWT_SECRET=$(openssl rand -hex 32) docker compose up -d
+# gateway :4000 · MinIO console :9001
 ```
 
 ```bash
@@ -36,11 +58,14 @@ npm run typecheck  # tsc --noEmit
 npm run icons      # regenerate public/icons/*.png from the brand mark
 ```
 
-> **Fonts.** IRANYekanWeb is installed — Light 300, Bold 700, ExtraBold 800, Black 900,
-> ExtraBlack 950, committed under `public/fonts/`. The set has no Regular (400) or
-> Medium (500), so the Light face is declared across 300–500; see
-> [`public/fonts/README.md`](public/fonts/README.md) for the two-file drop-in that
-> restores the exact weights.
+> **Fonts.** IRANYekanX (Regular 400 · Medium 500 · Bold 700) carries the text
+> range; IRANYekanWeb ExtraBold 800 carries headings. Both are committed under
+> `public/fonts/`. See [`public/fonts/README.md`](public/fonts/README.md).
+
+> **Brand.** The mark is traced from the supplied Figma PDFs into
+> `public/brand/` by `scripts/pdf-logo-to-svg.mjs`, and every PWA icon is
+> rasterised from it (`npm run icons`). The mark's coral is `#FF5252`; the UI
+> accent remains emerald `#059669` per the product spec.
 
 ## The five tabs
 
@@ -55,6 +80,18 @@ npm run icons      # regenerate public/icons/*.png from the brand mark
 Plus `/chat/[threadId]` — the consultation screen, pushed over the tabs —
 `/onboarding` and `/doctor`.
 
+## Operations console — `/admin`
+
+| Screen | What's in it |
+|---|---|
+| **Overview** | KPI tiles, 12-week trend as **small multiples** (three measures, three scales — never a dual axis), retention cohort heatmap on a single-hue sequential ramp, specialist revenue bars |
+| **Users** | Search and status filters; per-user deep dive with assessment answers, BMI, plan, adherence and the full payment log |
+| **Specialists** | Credential review (approve/reject), licence, capacity load, fee and an editable commission rate |
+| **Content** | Articles and recipes with publish actions, plus a push-broadcast composer with audience segments and a device preview |
+
+The palette is validated, not eyeballed — emerald/sky/amber pass the lightness,
+chroma, CVD-separation and contrast checks against a white surface.
+
 ## Doctor View
 
 A mock role switch (header chip, and Profile → نمای برنامه) flips the app into the
@@ -68,6 +105,7 @@ specialist portal, where the bottom nav becomes **بیماران · گفتگوه
 | **Workout builder** | Day picker, exercise library, sets × reps × rest steppers, per-exercise notes, inline animated movement previews |
 | **Supplement scheduler** | Dosage, time and window per item, reminder toggles, and **ارسال به تایم‌لاین** which writes straight into the client's own supplement timeline and fires a notification |
 | **Chat bridge** | `/chat/:thread?patient=:id` — patient context bar, and the transcript's outgoing side flips to the clinician |
+| **Consultation desk** `/doctor/desk` | Three panes: roster · live thread · clinical context (history, prior lab PDFs, quick-prescribe). Collapses to one column with a roster drawer on a phone |
 
 ## Highlighted subsystems
 
@@ -113,11 +151,19 @@ Light mode only — there is no dark theme and no theme switch.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — structure, shell, RTL rules, state, PWA, mock→API map
 - [`docs/chat-screen.md`](docs/chat-screen.md) — chat component breakdown + attachment pipeline
 - [`docs/avatar-upload-crop.md`](docs/avatar-upload-crop.md) — avatar modal breakdown + crop math
+- [`docs/backend.md`](docs/backend.md) — gateway: RBAC, socket protocol, media pipeline, REST surface
 - [`docs/notifications.md`](docs/notifications.md) — reminder pipeline, permission UX, path to real web push
+- [`twa/README.md`](twa/README.md) — Bubblewrap build, asset links, release checklist
 - [`docs/twa-packaging.md`](docs/twa-packaging.md) — Bubblewrap, asset links, store checklist
 
 ## Status
 
-Front end only. Every network boundary is mocked behind a hook or a module under
-`lib/mock/`, and [`docs/ARCHITECTURE.md §7`](docs/ARCHITECTURE.md) maps each one to the
-endpoint that replaces it.
+The gateway in `server/` is real, tested code — RBAC, room isolation, keyset
+pagination, the streaming 30 MB guard and the avatar pipeline all have
+integration coverage. Its persistence layer is in-memory behind a `Repository`
+interface; swapping in Postgres touches one file.
+
+The web app still reads from `lib/mock/` so all three portals run without the
+gateway. [`docs/ARCHITECTURE.md §7`](docs/ARCHITECTURE.md) maps each mock to the
+endpoint that replaces it, and [`docs/backend.md`](docs/backend.md) lists what is
+left before production.

@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { cx } from "@/lib/format";
 import { useAppStore } from "@/lib/store/AppStore";
-import { CoachIcon, ProfileIcon } from "@/components/ui/Icons";
+import { CoachIcon, ProfileIcon, SettingsIcon } from "@/components/ui/Icons";
 import type { AppRole } from "@/types";
 
 const ROLES: Array<{ key: AppRole; label: string; icon: typeof CoachIcon; home: string }> = [
   { key: "client", label: "مراجع", icon: ProfileIcon, home: "/" },
   { key: "specialist", label: "متخصص", icon: CoachIcon, home: "/doctor" },
+  { key: "admin", label: "مدیر", icon: SettingsIcon, home: "/admin" },
 ];
 
 /**

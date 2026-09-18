@@ -15,16 +15,18 @@ import { useAppStore } from "@/lib/store/AppStore";
 export function OnboardingGate() {
   const router = useRouter();
   const pathname = usePathname();
-  const { needsOnboarding, hydrated } = useAppStore();
+  const { needsOnboarding, hydrated, role } = useAppStore();
 
   useEffect(() => {
     // Wait for localStorage — redirecting before hydration would bounce a user
     // who has already completed the wizard.
     if (!hydrated) return;
+    // Only a client has an assessment to complete.
+    if (role !== "client") return;
     if (needsOnboarding && pathname !== "/onboarding") {
       router.replace("/onboarding");
     }
-  }, [hydrated, needsOnboarding, pathname, router]);
+  }, [hydrated, needsOnboarding, pathname, role, router]);
 
   return null;
 }

@@ -363,7 +363,7 @@ export interface HealthTargets {
 
 /* --------------------------------- Roles -------------------------------- */
 
-export type AppRole = "client" | "specialist";
+export type AppRole = "client" | "specialist" | "admin";
 
 /* ------------------------ Specialist-side patients ----------------------- */
 

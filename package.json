@@ -2,7 +2,7 @@
   "name": "hellofit",
   "version": "0.1.0",
   "private": true,
-  "description": "HelloFit (\u0647\u0644\u0648\u0641\u06cc\u062a) \u2014 mobile-first PWA/TWA for diet, fitness and nutritionist consultation.",
+  "description": "HelloFit (هلوفیت) — mobile-first PWA/TWA for diet, fitness and nutritionist consultation.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -21,6 +21,7 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",
+    "playwright-core": "^1.63.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.7.2"
