@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { Card, ProgressBar } from "@/components/ui/Bits";
 import { FireIcon } from "@/components/ui/Icons";
 import { useAppStore } from "@/lib/store/AppStore";
@@ -27,7 +28,7 @@ export function EnergyCard() {
 
       <div className="flex items-end gap-1.5">
         <p className={`text-3xl font-extrabold leading-none ${over ? "text-danger-600" : "text-ink"}`}>
-          {faNumber(remaining)}
+          <AnimatedNumber value={remaining} />
         </p>
         <p className="pb-1 text-2xs text-ink-muted">
           {over ? "کیلوکالری فراتر از هدف" : "کیلوکالری باقی‌مانده"}
@@ -38,15 +39,21 @@ export function EnergyCard() {
 
       <div className="grid grid-cols-3 divide-x divide-x-reverse divide-line pt-0.5">
         <div className="text-center">
-          <p className="text-sm font-extrabold text-primary-700">{faNumber(today.caloriesConsumed)}</p>
+          <p className="text-sm font-extrabold text-primary-700">
+            <AnimatedNumber value={today.caloriesConsumed} />
+          </p>
           <p className="mt-0.5 text-2xs text-ink-muted">دریافتی</p>
         </div>
         <div className="text-center">
-          <p className="text-sm font-extrabold text-sky-700">{faNumber(today.caloriesBurned)}</p>
+          <p className="text-sm font-extrabold text-sky-700">
+            <AnimatedNumber value={today.caloriesBurned} />
+          </p>
           <p className="mt-0.5 text-2xs text-ink-muted">سوزانده</p>
         </div>
         <div className="text-center">
-          <p className="text-sm font-extrabold text-ink">{faNumber(net)}</p>
+          <p className="text-sm font-extrabold text-ink">
+            <AnimatedNumber value={net} />
+          </p>
           <p className="mt-0.5 text-2xs text-ink-muted">خالص</p>
         </div>
       </div>

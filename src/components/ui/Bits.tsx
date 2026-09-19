@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { clamp, cx, faNumber } from "@/lib/format";
-import { CheckIcon } from "./Icons";
+import { CheckMorph, type CheckTone } from "./CheckMorph";
 
 /* ------------------------------- Section -------------------------------- */
 
@@ -105,36 +105,20 @@ export function CheckBubble({
   onChange: () => void;
   size?: number;
   label: string;
-  tone?: "primary" | "sky";
+  tone?: CheckTone;
 }) {
-  const accent = tone === "sky" ? "border-sky-600 bg-sky-600" : "border-primary-600 bg-primary-600";
   return (
-    <button
+    <motion.button
       type="button"
       role="checkbox"
       aria-checked={checked}
       aria-label={label}
       onClick={onChange}
+      whileTap={{ scale: 0.86 }}
       className="tap-target grid shrink-0 place-items-center"
     >
-      <motion.span
-        className={cx(
-          "grid place-items-center rounded-full border-2 transition-colors",
-          checked ? accent : "border-line bg-surface",
-        )}
-        style={{ width: size, height: size }}
-        whileTap={{ scale: 0.86 }}
-      >
-        <motion.span
-          initial={false}
-          animate={{ scale: checked ? 1 : 0, opacity: checked ? 1 : 0 }}
-          transition={{ type: "spring", stiffness: 500, damping: 26 }}
-          className="text-white"
-        >
-          <CheckIcon width={size * 0.62} height={size * 0.62} strokeWidth={2.6} />
-        </motion.span>
-      </motion.span>
-    </button>
+      <CheckMorph done={checked} size={size} tone={tone} />
+    </motion.button>
   );
 }
 

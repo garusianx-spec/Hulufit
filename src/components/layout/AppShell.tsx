@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { cx } from "@/lib/format";
+import { RoutineCelebration } from "@/features/routine/RoutineCelebration";
 import { BottomNav } from "./BottomNav";
 
 /**
@@ -31,6 +32,8 @@ export function AppShell({
         {children}
       </main>
       {withNav && <BottomNav />}
+      {/* Lives in the shell so the burst fires wherever the last item is ticked. */}
+      <RoutineCelebration />
     </div>
   );
 }

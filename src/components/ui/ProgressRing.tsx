@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { clamp, cx } from "@/lib/format";
 
 interface RingSegment {
@@ -21,7 +21,14 @@ interface ProgressRingProps {
   className?: string;
 }
 
-/** Animated SVG compliance ring. Supports concentric multi-metric mode. */
+/**
+ * Animated SVG compliance ring. Supports concentric multi-metric mode.
+ *
+ * The arc is sprung rather than tweened: logging a meal should feel like the
+ * ring is being pushed, not like a progress bar filling on a timer. The spring
+ * is critically damped, because an arc that overshoots reads as a value that
+ * was briefly wrong.
+ */
 export function ProgressRing({
   value = 0,
   segments,
@@ -33,6 +40,7 @@ export function ProgressRing({
   className,
 }: ProgressRingProps) {
   const rings = segments ?? [{ value, color }];
+  const reduced = useReducedMotion();
 
   return (
     <div className={cx("relative grid place-items-center", className)} style={{ width: size, height: size }}>
@@ -62,7 +70,18 @@ export function ProgressRing({
                 strokeDasharray={circumference}
                 initial={{ strokeDashoffset: circumference }}
                 animate={{ strokeDashoffset: circumference * (1 - pct / 100) }}
-                transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+                transition={
+                  reduced
+                    ? { duration: 0 }
+                    : {
+                        type: "spring",
+                        stiffness: 90,
+                        damping: 18,
+                        mass: 0.9,
+                        // The outer ring leads; the inner ones follow it in.
+                        delay: index * 0.07,
+                      }
+                }
               />
             </g>
           );
