@@ -1,10 +1,20 @@
 {
+  "_comment": [
+    "Source of truth for the Android wrapper. `build-twa.sh` renders this into",
+    "the twa-manifest.json that Bubblewrap reads, applying the host, package id,",
+    "version and signing key from the environment. Edit this file; never edit the",
+    "generated one, which is disposable and git-ignored."
+  ],
+
   "packageId": "app.hellofit.twa",
   "host": "app.hellofit.ir",
   "name": "هلوفیت",
   "launcherName": "هلوفیت",
+
   "display": "standalone",
   "orientation": "portrait",
+  "orientationLockEnabled": true,
+
   "themeColor": "#059669",
   "themeColorDark": "#059669",
   "navigationColor": "#FFFFFF",
@@ -12,18 +22,28 @@
   "navigationDividerColor": "#E2E8F0",
   "navigationDividerColorDark": "#E2E8F0",
   "backgroundColor": "#F8FAFC",
-  "enableNotifications": true,
+  "splashScreenFadeOutDuration": 300,
+
   "startUrl": "/?source=twa",
+  "webManifestUrl": "https://app.hellofit.ir/manifest.json",
+  "fullScopeUrl": "https://app.hellofit.ir/",
   "iconUrl": "https://app.hellofit.ir/icons/icon-512.png",
   "maskableIconUrl": "https://app.hellofit.ir/icons/maskable-512.png",
   "monochromeIconUrl": "https://app.hellofit.ir/icons/monochrome-512.png",
-  "splashScreenFadeOutDuration": 300,
+
+  "enableNotifications": true,
+  "enableSiteSettingsShortcut": true,
+  "fallbackType": "customtabs",
+  "minSdkVersion": 23,
+
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+
   "signingKey": {
     "path": "./android.keystore",
     "alias": "hellofit"
   },
-  "appVersionName": "1.0.0",
-  "appVersionCode": 1,
+
   "shortcuts": [
     {
       "name": "برنامه غذایی امروز",
@@ -44,21 +64,16 @@
       "chosenIconUrl": "https://app.hellofit.ir/icons/shortcut-chat.png"
     }
   ],
-  "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://app.hellofit.ir/manifest.json",
-  "fallbackType": "customtabs",
+
   "features": {
     "locationDelegation": { "enabled": false },
     "playBilling": { "enabled": false }
   },
+
+  "generatorApp": "bubblewrap-cli",
   "alphaDependencies": { "enabled": false },
-  "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://app.hellofit.ir/",
-  "minSdkVersion": 23,
-  "orientationLockEnabled": true,
-  "appVersion": "1.0.0",
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "protocolHandlers": [],

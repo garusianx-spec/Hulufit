@@ -10,3 +10,17 @@ npm-debug.log*
 .vercel
 *.tsbuildinfo
 next-env.d.ts
+
+# Android TWA — the keystore is the app's identity, and everything Bubblewrap
+# generates is reproducible from twa/bubblewrap.json.
+twa/android.keystore
+twa/twa-manifest.json
+twa/app/
+twa/.gradle/
+twa/gradle/
+twa/gradlew
+twa/gradlew.bat
+twa/*.apk
+twa/*.aab
+twa/*.idsig
+twa/*.keystore
