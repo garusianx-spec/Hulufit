@@ -28,6 +28,10 @@ export class ApiError extends Error {
   static unsupportedMedia(message: string, details?: unknown) {
     return new ApiError(415, "unsupported_media_type", message, details);
   }
+  /** `retryAfter` is in seconds and is echoed as a `Retry-After` header. */
+  static tooManyRequests(message: string, retryAfter: number) {
+    return new ApiError(429, "rate_limited", message, { retryAfter });
+  }
 }
 
 export function toErrorBody(error: unknown) {

@@ -11,6 +11,8 @@ import type { Attachment, Message, Page, Thread, User } from "./types.js";
  */
 export interface Repository {
   getUser(userId: string): Promise<User | null>;
+  /** Lookup by canonical MSISDN — the identity key for passwordless sign-in. */
+  getUserByPhone(phone: string): Promise<User | null>;
   upsertUser(user: User): Promise<User>;
   setAvatarKey(userId: string, key: string | null): Promise<void>;
 
@@ -43,6 +45,7 @@ const nowIso = () => new Date().toISOString();
  */
 export class InMemoryRepository implements Repository {
   private users = new Map<string, User>();
+  private usersByPhone = new Map<string, string>();
   private threads = new Map<string, Thread>();
   private messages = new Map<string, Message[]>();
   private seqs = new Map<string, number>();
@@ -51,8 +54,18 @@ export class InMemoryRepository implements Repository {
     return this.users.get(userId) ?? null;
   }
 
+  async getUserByPhone(phone: string) {
+    const userId = this.usersByPhone.get(phone);
+    return userId ? (this.users.get(userId) ?? null) : null;
+  }
+
   async upsertUser(user: User) {
+    const previous = this.users.get(user.id);
+    if (previous?.phone && previous.phone !== user.phone) {
+      this.usersByPhone.delete(previous.phone);
+    }
     this.users.set(user.id, user);
+    if (user.phone) this.usersByPhone.set(user.phone, user.id);
     return user;
   }
 

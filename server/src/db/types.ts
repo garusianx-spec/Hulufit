@@ -7,6 +7,8 @@ export interface User {
   id: string;
   role: Role;
   name: string;
+  /** Canonical `+989XXXXXXXXX`. Null for accounts created before sign-in. */
+  phone: string | null;
   avatarKey: string | null;
   createdAt: string;
 }

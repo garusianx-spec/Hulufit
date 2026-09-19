@@ -39,6 +39,7 @@ export function authRouter(deps: { config: Config; repo: Repository }) {
         id: userId,
         role: role as Role,
         name,
+        phone: null,
         avatarKey: null,
         createdAt: new Date().toISOString(),
       });
