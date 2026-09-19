@@ -42,9 +42,9 @@ also requires the principal to be a participant, and it is enforced twice:
   broadcast **physically cannot** reach a non-participant. Room membership is
   the security boundary, not a filter applied afterwards.
 
-Tokens are short-lived JWTs (`sub`, `role`, `name`, `threads`). There is no
-sign-in yet, so `POST /api/v1/auth/dev-token` mints one — and refuses outright
-when `NODE_ENV=production`.
+Tokens are short-lived JWTs (`sub`, `role`, `name`, `threads`), minted by the
+passwordless OTP flow in [`docs/auth.md`](./auth.md). `POST /api/v1/auth/dev-token`
+survives as a test shortcut and refuses outright when `NODE_ENV=production`.
 
 ---
 
@@ -120,6 +120,10 @@ rather than taking chat down with it.
 
 | Method | Path | Permission |
 |---|---|---|
+| `POST` | `/api/v1/auth/otp/request` | — (rate-limited by phone and IP) |
+| `POST` | `/api/v1/auth/otp/verify` | — (rate-limited by phone and IP) |
+| `POST` | `/api/v1/auth/refresh` | refresh cookie + CSRF header |
+| `POST` | `/api/v1/auth/logout` | — |
 | `POST` | `/api/v1/auth/dev-token` | — (dev only) |
 | `GET` | `/api/v1/threads` | `chat:read` |
 | `GET` | `/api/v1/threads/:id/messages?before=&limit=` | `chat:read` + participant |
@@ -163,8 +167,11 @@ JWT_SECRET=$(openssl rand -hex 32) docker compose up -d
       `db/repository.ts` is the only thing that changes.
 - [ ] Add the Socket.io Redis adapter and back `PresenceTracker` with a shared
       hash; the interface is already shaped for it.
-- [ ] Replace `/auth/dev-token` with the real identity provider. Everything
-      downstream only ever sees a verified `Principal`.
+- [ ] Move `OtpStore` and the rate limiters to Redis — both are per-process, so
+      a second node today means a code issued on one and verified on the other
+      fails, and the limits multiply by the node count.
+- [ ] Configure a real `SMS_PROVIDER`; the console one refuses to boot in
+      production, but confirm the carrier template is approved before launch.
 - [ ] Mirror `MAX_UPLOAD_BYTES` at the ingress (`client_max_body_size 30m`).
 - [ ] Virus-scan attachments before a clinician can open them — lab PDFs are
       user-supplied.

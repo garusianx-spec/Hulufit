@@ -24,10 +24,11 @@ All RTL, all IRANYekan, light mode only.
 | Operations console | `/admin` | مدیر — analytics, users, specialists, content |
 | Gateway | `server/` | Socket.io + media + RBAC API |
 
-**There is no auth.** By design the app boots straight into the authenticated dashboard
-with fully populated mock state. See [`docs/ARCHITECTURE.md §2`](docs/ARCHITECTURE.md)
-for the two places sign-in will slot into later. The onboarding wizard is a *health*
-gate, not an auth gate — the seeded user has already completed it.
+**Sign-in is passwordless.** A phone number, a five-digit SMS code, and the role on
+the session decides which of the three surfaces opens — see [`docs/auth.md`](docs/auth.md).
+With no gateway running, `NEXT_PUBLIC_AUTH_MODE=mock` emulates it in the browser and
+shows the code on screen. The onboarding wizard is a *health* gate that runs after
+sign-in; the seeded user has already completed it.
 
 ## Quick start
 
