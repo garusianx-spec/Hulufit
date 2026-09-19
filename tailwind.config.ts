@@ -77,6 +77,8 @@ const config: Config = {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         shimmer: {
+          // Travels right → left, following the reading direction.
+          "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(-100%)" },
         },
         "pulse-dot": {
@@ -87,6 +89,7 @@ const config: Config = {
       animation: {
         "fade-up": "fade-up 260ms cubic-bezier(0.22, 1, 0.36, 1) both",
         "pulse-dot": "pulse-dot 1.2s ease-in-out infinite",
+        shimmer: "shimmer 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
     },
   },

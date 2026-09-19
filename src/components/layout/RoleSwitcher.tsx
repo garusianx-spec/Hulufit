@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { cx } from "@/lib/format";
 import { useAppStore } from "@/lib/store/AppStore";
+import { useAuth } from "@/features/auth/hooks/AuthProvider";
+import { mayOpen } from "@/features/auth/lib/session";
 import { CoachIcon, ProfileIcon, SettingsIcon } from "@/components/ui/Icons";
 import type { AppRole } from "@/types";
 
@@ -14,20 +16,24 @@ const ROLES: Array<{ key: AppRole; label: string; icon: typeof CoachIcon; home: 
 ];
 
 /**
- * Mock role switch between the client app and the specialist portal.
+ * Switches between the sides of the product the signed-in account may open.
  *
- * Standing in for the role claim a real session would carry, so both sides of
- * the product are reachable without auth. Switching also navigates to that
- * role's home, because the other role's routes are not in its nav.
+ * Offering a role the session does not carry would only produce a screen whose
+ * every request the gateway refuses, so the options are filtered by the same
+ * table that guards the routes. One option left means nothing to switch.
  */
 export function RoleSwitcher({ compact = false }: { compact?: boolean }) {
   const router = useRouter();
   const { role, dispatch } = useAppStore();
+  const { principal } = useAuth();
 
-  const switchTo = (next: AppRole) => {
+  const available = principal ? ROLES.filter((r) => mayOpen(principal.role, r.home)) : [];
+  if (available.length < 2) return null;
+
+  const switchTo = (next: AppRole, home: string) => {
     if (next === role) return;
     dispatch({ type: "role/set", role: next });
-    router.push(ROLES.find((r) => r.key === next)!.home);
+    router.push(home);
   };
 
   return (
@@ -39,14 +45,14 @@ export function RoleSwitcher({ compact = false }: { compact?: boolean }) {
         compact ? "" : "w-full p-1",
       )}
     >
-      {ROLES.map((option) => {
+      {available.map((option) => {
         const active = option.key === role;
         const Icon = option.icon;
         return (
           <button
             key={option.key}
             type="button"
-            onClick={() => switchTo(option.key)}
+            onClick={() => switchTo(option.key, option.home)}
             aria-pressed={active}
             className={cx(
               "relative rounded-pill font-bold transition-colors",

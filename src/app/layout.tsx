@@ -6,6 +6,8 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { NotificationProvider } from "@/lib/notifications/NotificationProvider";
 import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { ServiceWorkerBridge } from "@/components/layout/ServiceWorkerBridge";
+import { AuthProvider } from "@/features/auth/hooks/AuthProvider";
+import { AuthGate } from "@/components/layout/AuthGate";
 
 export const metadata: Metadata = {
   applicationName: "HelloFit",
@@ -62,16 +64,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fa" dir="rtl">
       <body className="font-sans antialiased">
         {/*
-          No auth gate by design: the app boots straight into the authenticated
-          dashboard with pre-populated mock state. Sign-in lands in a later phase.
+          Passwordless sign-in wraps the whole shell. `AuthGate` only routes —
+          every permission is re-checked by the gateway on each request.
         */}
         <AppStoreProvider>
           <ToastProvider>
-            <NotificationProvider>
-              <OnboardingGate />
-              {children}
-              <ServiceWorkerBridge />
-            </NotificationProvider>
+            <AuthProvider>
+              <NotificationProvider>
+                <AuthGate>
+                  <OnboardingGate />
+                  {children}
+                  <ServiceWorkerBridge />
+                </AuthGate>
+              </NotificationProvider>
+            </AuthProvider>
           </ToastProvider>
         </AppStoreProvider>
       </body>

@@ -21,6 +21,8 @@ export function OnboardingGate() {
     // Wait for localStorage — redirecting before hydration would bounce a user
     // who has already completed the wizard.
     if (!hydrated) return;
+    // Sign-in comes first; the wizard must not fight the auth redirect.
+    if (pathname.startsWith("/auth")) return;
     // Only a client has an assessment to complete.
     if (role !== "client") return;
     if (needsOnboarding && pathname !== "/onboarding") {
