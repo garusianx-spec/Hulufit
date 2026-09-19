@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { isPublicPath } from "@/lib/routes";
 
 /**
  * Edge middleware: response headers, then coarse routing.
@@ -12,20 +13,15 @@ import { NextResponse, type NextRequest } from "next/server";
 const HINT_COOKIE = "hf_hint";
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 
-/** Sections worth redirecting away from before they render. */
-const PROTECTED = [
-  "/",
-  "/plans",
-  "/specialists",
-  "/articles",
-  "/profile",
-  "/chat",
-  "/doctor",
-  "/admin",
-  "/onboarding",
-];
+/**
+ * Sections worth redirecting away from before they render. The articles are
+ * deliberately absent: they are the public surface, invited by `robots.ts` and
+ * listed in the sitemap, so a crawler must reach them signed out.
+ */
+const PROTECTED = ["/", "/plans", "/specialists", "/profile", "/chat", "/doctor", "/admin", "/onboarding"];
 
 function isProtected(pathname: string): boolean {
+  if (isPublicPath(pathname)) return false;
   return PROTECTED.some((p) => pathname === p || (p !== "/" && pathname.startsWith(`${p}/`)));
 }
 
@@ -37,8 +33,9 @@ function isProtected(pathname: string): boolean {
  * Next's own RSC bootstrap is inline. `'unsafe-inline'` is therefore the price
  * of a static, offline-capable PWA. What remains is still worth having — no
  * third-party script origin can load, `object-src` is closed, the base URI is
- * pinned, and the app renders no raw HTML anywhere, so there is no injection
- * point for an inline script to arrive through in the first place.
+ * pinned, and the only raw HTML the app writes is its own JSON-LD, escaped at
+ * the source — so there is no injection point for an inline script to arrive
+ * through in the first place.
  */
 function contentSecurityPolicy(dev: boolean): string {
   // The websocket gateway shares the API origin; dev also needs Next's HMR socket.

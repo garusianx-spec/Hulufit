@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/AuthProvider";
 import { landingFor, mayOpen } from "@/features/auth/lib/session";
 import { useAppStore } from "@/lib/store/AppStore";
+import { isPublicPath } from "@/lib/routes";
 import { Skeleton, SkeletonCard } from "@/components/ui/Skeleton";
 
 /**
@@ -22,23 +23,24 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const { dispatch } = useAppStore();
   const adopted = useRef<string | null>(null);
 
-  const onAuthRoute = pathname.startsWith("/auth");
+  // The articles read fine signed out; everything else needs a session.
+  const isPublic = isPublicPath(pathname);
 
   useEffect(() => {
     if (status === "loading") return;
 
     if (status === "anonymous") {
-      if (!onAuthRoute) {
+      if (!isPublic) {
         const next = pathname === "/" ? "" : `?next=${encodeURIComponent(pathname)}`;
         router.replace(`/auth${next}`);
       }
       return;
     }
 
-    if (principal && !onAuthRoute && !mayOpen(principal.role, pathname)) {
+    if (principal && !isPublic && !mayOpen(principal.role, pathname)) {
       router.replace(landingFor(principal.role));
     }
-  }, [status, principal, pathname, onAuthRoute, router]);
+  }, [status, principal, pathname, isPublic, router]);
 
   // The session decides which side of the product opens first. Done once per
   // sign-in, so the in-app role switch still works afterwards.
@@ -48,7 +50,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     dispatch({ type: "role/set", role: principal.role });
   }, [principal, dispatch]);
 
-  if (onAuthRoute) return <>{children}</>;
+  if (isPublic) return <>{children}</>;
   if (status !== "authenticated") return <BootSkeleton />;
   return <>{children}</>;
 }

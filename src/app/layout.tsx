@@ -8,16 +8,38 @@ import { OnboardingGate } from "@/components/onboarding/OnboardingGate";
 import { ServiceWorkerBridge } from "@/components/layout/ServiceWorkerBridge";
 import { AuthProvider } from "@/features/auth/hooks/AuthProvider";
 import { AuthGate } from "@/components/layout/AuthGate";
+import { JsonLd, organizationLd, webApplicationLd } from "@/components/seo/JsonLd";
+import { env } from "@/lib/env";
+
+const DESCRIPTION =
+  "هلوفیت — پلتفرم جامع رژیم غذایی، تمرین و مشاوره با متخصصین تغذیه و مربیان بدنسازی.";
 
 export const metadata: Metadata = {
+  // Every relative URL in this file and in every page resolves against this.
+  metadataBase: new URL(env.siteUrl),
   applicationName: "HelloFit",
   title: {
     default: "هلوفیت | HelloFit",
     template: "%s | هلوفیت",
   },
-  description:
-    "هلوفیت — پلتفرم جامع رژیم غذایی، تمرین و مشاوره با متخصصین تغذیه و مربیان بدنسازی.",
+  description: DESCRIPTION,
   manifest: "/manifest.json",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    locale: "fa_IR",
+    siteName: "هلوفیت",
+    title: "هلوفیت | HelloFit",
+    description: DESCRIPTION,
+    url: "/",
+    images: [{ url: "/icons/icon-512.png", width: 512, height: 512, alt: "هلوفیت" }],
+  },
+  twitter: {
+    card: "summary",
+    title: "هلوفیت | HelloFit",
+    description: DESCRIPTION,
+    images: ["/icons/icon-512.png"],
+  },
   appleWebApp: {
     capable: true,
     title: "HelloFit",
@@ -63,6 +85,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fa" dir="rtl">
       <body className="font-sans antialiased">
+        <JsonLd data={organizationLd(env.siteUrl)} />
+        <JsonLd data={webApplicationLd(env.siteUrl)} />
         {/*
           Passwordless sign-in wraps the whole shell. `AuthGate` only routes —
           every permission is re-checked by the gateway on each request.
